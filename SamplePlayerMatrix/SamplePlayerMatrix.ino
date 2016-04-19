@@ -3,8 +3,8 @@
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
-#include <Bounce.h>
-#include <Keypad.h>
+#include "AudioButton.h"
+#include<Keypad.h>
 
 // WAV files converted to code by wav2sketch
 #include "AudioSampleSnare.h"        // http://www.freesound.org/people/KEVOY/sounds/82583/
@@ -27,23 +27,9 @@ byte rowPins[ROWS] = {3, 2, 1, 0}; //connect to the row pinouts of the keypad
 byte colPins[COLS] = {8, 5, 4}; //connect to the column pinouts of the keypad
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
-class AudioButton{
-  public:
-    AudioButton(int nr);
-    void setTrack(char* track);
-    string getTrack();
-  private:
-    int _nr;
-};
-AudioButton::AudioButton(int nr){
- _nr=nr
-}
-void AudioButton::setTrack(char* track){
+//AudioButton* Btn1= new AudioButton(1);
+AudioButton btn1(1);
 
-}
-voidAudioButton::getTrack(char* track){
-  
-}
 
 
 // Create the Audio components.  These should be created in the
@@ -151,6 +137,7 @@ void playFile(const char *filename)
 }
 
 void loop() {
+btn1.setTrack((char*)"1.WAV");
 char key = keypad.getKey();
   if (key) {
     Serial.println(key);
