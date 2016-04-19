@@ -6,14 +6,6 @@
 #include "AudioButton.h"
 #include<Keypad.h>
 
-// WAV files converted to code by wav2sketch
-#include "AudioSampleSnare.h"        // http://www.freesound.org/people/KEVOY/sounds/82583/
-#include "AudioSampleTomtom.h"       // http://www.freesound.org/people/zgump/sounds/86334/
-#include "AudioSampleHihat.h"        // http://www.freesound.org/people/mhc/sounds/102790/
-#include "AudioSampleKick.h"         // http://www.freesound.org/people/DWSD/sounds/171104/
-#include "AudioSampleGong.h"         // http://www.freesound.org/people/juskiddink/sounds/86773/
-#include "AudioSampleCashregister.h" // http://www.freesound.org/people/kiddpark/sounds/201159/
-
 const byte ROWS = 4; //four rows
 const byte COLS = 3; //three columns
 char keys[ROWS][COLS] = {
@@ -27,10 +19,14 @@ byte rowPins[ROWS] = {3, 2, 1, 0}; //connect to the row pinouts of the keypad
 byte colPins[COLS] = {8, 5, 4}; //connect to the column pinouts of the keypad
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
-//AudioButton* Btn1= new AudioButton(1);
 AudioButton btn1(1);
-
-
+AudioButton btn2(2);
+AudioButton btn3(3);
+AudioButton btn4(4);
+AudioButton btn5(5);
+AudioButton btn6(6);
+AudioButton btn7(7);
+AudioButton btn8(8);
 
 // Create the Audio components.  These should be created in the
 // order data flows, inputs/sources -> processing -> outputs
@@ -38,12 +34,12 @@ AudioButton btn1(1);
 AudioPlaySdWav     playWav1;
 AudioPlaySdWav     playWav2;
 AudioPlaySdWav     playWav3;
-AudioPlayMemory    sound0;
-AudioPlayMemory    sound1;  // six memory players, so we can play
-AudioPlayMemory    sound2;  // all six sounds simultaneously
-AudioPlayMemory    sound3;
-AudioPlayMemory    sound4;
-AudioPlayMemory    sound5;
+AudioPlaySdWav     playWav4;
+AudioPlaySdWav     playWav5;
+AudioPlaySdWav     playWav6;
+AudioPlaySdWav     playWav7;
+AudioPlaySdWav     playWav8;
+
 AudioMixer4        mix1;    // two 4-channel mixers are needed in
 AudioMixer4        mix2;    // tandem to combine 6 audio sources
 AudioMixer4        mix3;    // tandem to combine 6 audio sources
@@ -52,26 +48,21 @@ AudioOutputAnalog  dac;     // play to both I2S audio board and on-chip DAC
 
 // Create Audio connections between the components
 //
-AudioConnection c1(sound0, 0, mix1, 0);
-AudioConnection c2(sound1, 0, mix1, 1);
-AudioConnection c3(sound2, 0, mix1, 2);
-AudioConnection c4(sound3, 0, mix1, 3);
-AudioConnection c5(mix1, 0, mix2, 0);   // output of mix1 into 1st input on mix2
-AudioConnection c6(sound4, 0, mix2, 1);
-AudioConnection c7(sound5, 0, mix2, 2);
-AudioConnection patchCord1(playWav1,0,mix2,3);
-AudioConnection c11(mix2, 0, mix3, 0);
-AudioConnection patchCord2(playWav2,0,mix3,1);
-AudioConnection patchCord3(playWav3,0,mix3,2);
+AudioConnection patchCord1(playWav1,0,mix1,0);
+AudioConnection patchCord2(playWav2,0,mix1,1);
+AudioConnection patchCord3(playWav3,0,mix1,2);
+AudioConnection patchCord4(playWav4,0,mix1,3);
+AudioConnection sum1(mix1, 0, mix2, 0);
+AudioConnection patchCord5(playWav5,0,mix2,1);
+AudioConnection patchCord6(playWav6,0,mix2,2);
+AudioConnection patchCord7(playWav7,0,mix2,3);
+AudioConnection sum2(mix2, 0, mix3, 0);
+AudioConnection patchCord8(playWav8,0,mix3,1);
+
 AudioConnection c8(mix3, 0, headphones, 0);
 AudioConnection c9(mix3, 0, headphones, 1);
 AudioConnection c10(mix3, 0, dac, 0);
 
-/*
-AudioConnection patchCord2(playWav1, 1, mix3, 1);
-AudioConnection patchCord11(playWav1,0,mix3,0);
-AudioConnection patchCord12(playWav1, 1, mix3, 1);
-*/
 // Create an object to control the audio shield.
 // 
 AudioControlSGTL5000 audioShield;
@@ -103,7 +94,9 @@ void setup() {
   mix1.gain(3, 0.4);
   mix2.gain(1, 0.4);
   mix2.gain(2, 0.4);
-
+  mix2.gain(3, 0.4);
+  mix3.gain(1, 0.4);
+  
     SPI.setMOSI(SDCARD_MOSI_PIN);
   SPI.setSCK(SDCARD_SCK_PIN);
   if (!(SD.begin(SDCARD_CS_PIN))) {
@@ -148,36 +141,39 @@ char key = keypad.getKey();
   //
   
   if (key=='1') {
-    sound0.play(AudioSampleSnare);
+   //playFile
+   playWav1.play("1.WAV");
   }
   if (key=='2') {
-    sound1.play(AudioSampleTomtom);
+   //playFile
+   playWav2.play("2.WAV");
   }
   if (key=='3') {
-    sound2.play(AudioSampleHihat);
+   //playFile
+   playWav3.play("3.WAV");
   }
+
   if (key=='4') {
-    sound3.play(AudioSampleKick);
+   //playFile
+   playWav1.play("4.WAV");
   }
   if (key=='5') {
-    // comment this line to work with Teensy 3.0.
-    // the Gong sound is very long, too much for 3.0's memory
-    sound4.play(AudioSampleGong);
+   //playFile
+   playWav2.play("5.WAV");
   }
   if (key=='6') {
-    sound5.play(AudioSampleCashregister);
+   //playFile
+   playWav3.play("6.WAV");
   }
+  
   if (key=='7') {
    //playFile
-   playWav1.play("7.WAV");
+   playWav3.play("7.WAV");
   }
+  
   if (key=='8') {
    //playFile
-   playWav2.play("8.WAV");
-  }
-  if (key=='9') {
-   //playFile
-   playWav3.play("9.WAV");
+   playWav3.play("8.WAV");
   }
 }
 
